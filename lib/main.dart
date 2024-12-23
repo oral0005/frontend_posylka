@@ -1,82 +1,75 @@
 import 'package:flutter/material.dart';
+import 'screens/profile_screen.dart';
+import 'screens/history_screen.dart';
+import 'screens/my_posts_screen.dart';
+import 'screens/posts_screen.dart';
+import 'screens/login_screen.dart'; // Import login screen
+import 'screens/register_screen.dart'; // Import register screen
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const NavigationBarApp());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NavigationBarApp extends StatelessWidget {
+  const NavigationBarApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 30, 30, 30),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
-        useMaterial3: true,
-        textTheme: TextTheme(
-          bodyMedium: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: 20,
-          ),
-            labelSmall: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-                fontWeight: FontWeight.w700,
-                fontSize: 14
-            )
-        )
-      ),
-      home: const MyHomePage(title: 'Flutter Demo'),
+      theme: ThemeData(useMaterial3: true),
+      initialRoute: '/login', // Start with the login page
+      routes: {
+        '/login': (context) => const LoginScreen(), // Login screen route
+        '/register': (context) => const RegisterScreen(), // Register screen route
+        '/home': (context) => const NavigationExample(), // Main app with navigation
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class NavigationExample extends StatefulWidget {
+  const NavigationExample({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<NavigationExample> createState() => _NavigationExampleState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class _NavigationExampleState extends State<NavigationExample> {
+  int currentPageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
-      body: ListView.builder(
-          itemCount: 10,
-          itemBuilder: (context,i) => ListTile(
-            title: Text(
-              'Bitcoin',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            subtitle: Text(
-              '20000\$',
-              style: Theme.of(context).textTheme.labelSmall,
-              ),
-            ),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        selectedIndex: currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(
+            icon: Icon(Icons.person_outlined),
+            label: 'Profile',
           ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+          NavigationDestination(
+            icon: Icon(Icons.history),
+            label: 'History',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.post_add),
+            label: 'My Posts',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.list_alt_outlined),
+            label: 'Posts',
+          ),
+        ],
       ),
+      body: <Widget>[
+        const ProfileScreen(),
+        const HistoryScreen(),
+        const MyPostsScreen(),
+        const PostsScreen(),
+      ][currentPageIndex],
     );
   }
 }
